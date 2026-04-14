@@ -404,9 +404,8 @@ def full_score(symbol):
         "news":          n,
         "institutional": i,
         "total":         t + s + v + n + i
-        print(f"{symbol} total score: {total_score}")
     }
-
+    print(f"{symbol} total score: {total_score}")
     # Sign the score so we can detect if it was modified
     sig = sign_score(symbol, breakdown)
 
