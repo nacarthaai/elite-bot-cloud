@@ -1,0 +1,1 @@
+worker: python elite_bot_secure.py

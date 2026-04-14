@@ -1,0 +1,7 @@
+pandas
+numpy
+requests
+ta
+alpaca-py
+cryptography
+pytz
