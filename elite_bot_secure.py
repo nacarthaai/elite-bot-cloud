@@ -46,7 +46,7 @@ TRAILING_AFTER   = 0.05
 TRAILING_STOP    = 0.03
 
 # ── Scoring thresholds ─────────────────────────────────────────
-BUY_THRESHOLD  = 55 if not LIVE_MODE else 70
+BUY_THRESHOLD  = 40 if not LIVE_MODE else 70
 SELL_THRESHOLD = 30 if not LIVE_MODE else 40
 
 # ── Paths ──────────────────────────────────────────────────────
@@ -348,7 +348,7 @@ def score_news(symbol):
         feed = data.get("feed", [])
 
         if not feed:
-            return 8
+            return 15
 
         scores = []
         for item in feed[:5]:
@@ -372,7 +372,7 @@ def score_news(symbol):
 
     except Exception as e:
         print("NEWS ERROR:", e)
-        return 8
+        return 10
 
 INSTITUTIONAL_STOCKS = {
     "AAPL","MSFT","GOOGL","AMZN","NVDA","META","JPM","JNJ","V",
@@ -404,6 +404,7 @@ def full_score(symbol):
         "news":          n,
         "institutional": i,
         "total":         t + s + v + n + i
+        print(f"{symbol} total score: {total_score}")
     }
 
     # Sign the score so we can detect if it was modified
