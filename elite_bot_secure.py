@@ -329,32 +329,42 @@ def score_volume(symbol):
 
 def score_news(symbol):
     try:
-        if NEWS_API_KEY in ("NOT_SET", "YOUR_NEWSAPI_KEY_HERE", ""):
+        api_key = os.getenv("NEWS_API_KEY")
+        if not api_key:
             return 8
-        url  = (f"https://newsapi.org/v2/everything?"
-                f"q={symbol}&language=en&sortBy=publishedAt"
-                f"&pageSize=10&apiKey={NEWS_API_KEY}")
+
+        url = f"https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers={symbol}&apikey={api_key}"
         resp = requests.get(url, timeout=5)
-        if resp.status_code != 200: return 8
-        articles = resp.json().get("articles", [])
-        if not articles: return 8
-        pos_words = ["beat","surge","rally","growth","record","profit",
-                     "upgrade","bullish","strong","outperform","revenue",
-                     "expansion","innovation","gains","raises","exceeds"]
-        neg_words = ["miss","drop","fall","loss","downgrade","bearish",
-                     "weak","underperform","decline","lawsuit","recall",
-                     "investigation","layoff","bankruptcy","warning","cuts"]
-        pos = neg = 0
-        for a in articles[:8]:
-            text = ((a.get("title") or "") + " " +
-                    (a.get("description") or "")).lower()
-            pos += sum(1 for w in pos_words if w in text)
-            neg += sum(1 for w in neg_words if w in text)
-        if neg > pos * 2:   return 0
-        elif neg > pos:     return 4
-        elif pos > neg * 2: return 15
-        elif pos > neg:     return 10
-        return 8
+
+        if resp.status_code != 200:
+            return 8
+
+        data = resp.json()
+        feed = data.get("feed", [])
+
+        if not feed:
+            return 8
+
+        scores = []
+        for item in feed[:5]:
+            score = item.get("overall_sentiment_score")
+            if score is not None:
+                scores.append(float(score))
+
+        if not scores:
+            return 8
+
+        avg_sentiment = sum(scores) / len(scores)
+
+        if avg_sentiment > 0.3:
+            return 15
+        elif avg_sentiment > 0:
+            return 10
+        elif avg_sentiment < -0.3:
+            return 0
+        else:
+            return 5
+
     except Exception:
         return 8
 
