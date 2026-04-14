@@ -333,9 +333,12 @@ def score_news(symbol):
         if not api_key:
             return 8
 
-        url = f"https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers={symbol}&apikey={api_key}"
-        resp = requests.get(url, timeout=5)
+       url = f"https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers={symbol}&apikey={api_key}"
 
+print("DEBUG: USING ALPHA VANTAGE")
+print("DEBUG URL:", url)
+
+resp = requests.get(url, timeout=5)
         if resp.status_code != 200:
             return 8
 
